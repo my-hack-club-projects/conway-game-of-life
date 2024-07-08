@@ -4,6 +4,8 @@ local cellSize = 10
 local grid = {}
 local updateTime = 0.1
 local timer = 0
+local running = false
+local currentEditCell = {x = 0, y = 0}
 
 math.randomseed(os.time()) -- Seed depending on the current time
 
@@ -54,10 +56,32 @@ function love.load()
 end
 
 function love.update(dt)
-    timer = timer + dt
-    if timer >= updateTime then
-        updateGrid()
-        timer = 0
+    if running then
+        timer = timer + dt
+        if timer >= updateTime then
+            updateGrid()
+            timer = 0
+        end
+    else
+        -- edit mode, click to toggle a cell
+        if love.mouse.isDown(1) then
+            local x, y = love.mouse.getPosition()
+
+            x = math.floor(x / cellSize) + 1
+            y = math.floor(y / cellSize) + 1
+
+            if currentEditCell.x ~= x or currentEditCell.y ~= y then
+                currentEditCell.x = x
+                currentEditCell.y = y
+
+                if x > 0 and y > 0 and x <= gridWidth and y <= gridHeight then
+                    grid[y][x] = 1 - grid[y][x]
+                end
+            end
+        else
+            currentEditCell.x = 0
+            currentEditCell.y = 0
+        end
     end
 end
 
