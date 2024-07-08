@@ -5,6 +5,7 @@ local grid = {}
 local updateTime = 0.1
 local timer = 0
 local running = false
+local lastSpacePressed = false
 local currentEditCell = {x = 0, y = 0}
 
 math.randomseed(os.time()) -- Seed depending on the current time
@@ -56,6 +57,14 @@ function love.load()
 end
 
 function love.update(dt)
+    if love.keyboard.isDown("space") then
+        if not lastSpacePressed then
+            running = not running
+        end
+        lastSpacePressed = true
+    else
+        lastSpacePressed = false
+    end
     if running then
         timer = timer + dt
         if timer >= updateTime then
