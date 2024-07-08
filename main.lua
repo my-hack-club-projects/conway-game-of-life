@@ -48,6 +48,8 @@ function updateGrid()
 end
 
 function love.load()
+    love.window.setTitle("Game of Life")
+    love.window.setMode(gridWidth * cellSize, gridHeight * cellSize, {resizable = true})
     for y = 1, gridHeight do
         grid[y] = {}
         for x = 1, gridWidth do
@@ -57,6 +59,28 @@ function love.load()
 end
 
 function love.update(dt)
+    local windowWidth, windowHeight = love.graphics.getDimensions()
+    local newGridWidth = math.floor(windowWidth / cellSize)
+    local newGridHeight = math.floor(windowHeight / cellSize)
+    
+    if newGridWidth ~= gridWidth or newGridHeight ~= gridHeight then
+        gridWidth = newGridWidth
+        gridHeight = newGridHeight
+        
+        local newGrid = {}
+        for y = 1, gridHeight do
+            newGrid[y] = {}
+            for x = 1, gridWidth do
+                if grid[y] and grid[y][x] then
+                    newGrid[y][x] = grid[y][x]
+                else
+                    newGrid[y][x] = 0
+                end
+            end
+        end
+        grid = newGrid
+    end
+
     if love.keyboard.isDown("space") then
         if not lastSpacePressed then
             running = not running
@@ -65,6 +89,7 @@ function love.update(dt)
     else
         lastSpacePressed = false
     end
+
     if running then
         timer = timer + dt
         if timer >= updateTime then
